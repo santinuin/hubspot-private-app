@@ -13,7 +13,6 @@ exports.main = async (context = {}) => {
 
         const token = loginResponse.data.access_token;
 
-
         const decoded = jwt.decode(token);
         const idClient = decoded.idClient;
 
