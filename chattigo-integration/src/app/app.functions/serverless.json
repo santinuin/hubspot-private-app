@@ -1,8 +1,15 @@
 {
   "appFunctions": {
-    "myFunc": {
+    "sendTemplate": {
       "file": "example-function.js",
       "secrets": []
+    },
+    "getTemplates": {
+      "file": "getTemplates-function.js",
+      "secrets": [
+          "USERNAME",
+          "PASSWORD"
+      ]
     }
   }
 }
