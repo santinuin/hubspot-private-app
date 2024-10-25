@@ -21,7 +21,6 @@ exports.main = async (context = {}) => {
                 Authorization: `Bearer ${token}`
             }
         });
-        console.log("response: ", response.data);
 
         const templates = response.data.data.map(template => ({
             value: template.name,

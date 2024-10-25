@@ -25,7 +25,6 @@ const Extension = ({context, runServerless, sendAlert}) => {
         const fetchOptions = async () => {
             try {
                 const response = await runServerless({ name: "getTemplates" });
-                console.log(response.response.templates);
                 if (response.response.templates) {
                     setTemplates(response.response.templates);
                 } else {
