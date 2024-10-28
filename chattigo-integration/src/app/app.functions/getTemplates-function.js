@@ -3,7 +3,9 @@ const jwt = require('jsonwebtoken');
 
 exports.main = async (context = {}) => {
     try {
-        //const { USERNAME, PASSWORD } = context.secrets;
+
+        console.log('USERNAME:', process.env.USERNAME);
+        console.log('PASSWORD:', process.env.PASSWORD);
 
         // Obtener el token de autenticación
         const loginResponse = await axios.post('https://condor-dev.chattigo.com/api-massive/message/login', {
