@@ -43,7 +43,7 @@ const Extension = ({context, runServerless, sendAlert}) => {
 
     const sendHsm = async () => {
         const {response} = await runServerless({name: "sendHsm", parameters: {phoneNumbers: phoneNumbers, template: selectedTemplate}});
-        sendAlert({message: response});
+        sendAlert({message: "HSM enviado con éxito", type: "success"});
     };
 
     return (

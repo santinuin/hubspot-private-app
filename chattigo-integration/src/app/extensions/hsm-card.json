@@ -1,11 +1,11 @@
 {
   "type": "crm-card",
   "data": {
-    "title": "Example Card",
-    "uid": "get_started_card",
+    "title": "Envío de HSM",
+    "uid": "hsm_sender",
     "location": "crm.record.tab",
     "module": {
-      "file": "Example.jsx"
+      "file": "HsmSender.jsx"
     },
     "objectTypes": [{ "name": "contacts" }]
   }
