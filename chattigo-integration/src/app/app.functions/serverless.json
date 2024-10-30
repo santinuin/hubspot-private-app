@@ -10,6 +10,13 @@
           "USERNAME",
           "PASSWORD"
       ]
+    },
+    "sendHsm": {
+      "file": "sendHsm-function.js",
+      "secrets": [
+        "USERNAME",
+        "PASSWORD"
+      ]
     }
   }
 }

@@ -4,7 +4,8 @@ import {
     Text,
     Input,
     Flex,
-    hubspot, Select,
+    hubspot,
+    Select,
 } from "@hubspot/ui-extensions";
 
 // Define the extension to be run within the Hubspot CRM
@@ -18,8 +19,9 @@ hubspot.extend(({context, runServerlessFunction, actions}) => (
 
 // Define the Extension component, taking in runServerless, context, & sendAlert as props
 const Extension = ({context, runServerless, sendAlert}) => {
-    const [text, setText] = useState("");
+    const [phoneNumbers, setPhoneNumbers] = useState("");
     const [templates, setTemplates] = useState([{label: "Loading...", value: ""}]);
+    const [selectedTemplate, setSelectedTemplate] = useState("");
 
     useEffect(() => {
         const fetchOptions = async () => {
@@ -39,10 +41,8 @@ const Extension = ({context, runServerless, sendAlert}) => {
         fetchOptions();
     }, [runServerless]);
 
-    // Call serverless function to execute with parameters.
-    // The `myFunc` function name is configured inside `serverless.json`
-    const handleClick = async () => {
-        const {response} = await runServerless({name: "sendTemplate", parameters: {text: text}});
+    const sendHsm = async () => {
+        const {response} = await runServerless({name: "sendHsm", parameters: {phoneNumbers: phoneNumbers, template: selectedTemplate}});
         sendAlert({message: response});
     };
 
@@ -59,9 +59,10 @@ const Extension = ({context, runServerless, sendAlert}) => {
                     name="templates"
                     label="Templates"
                     options={templates}
+                    onChange={setSelectedTemplate}
                 />
-                <Input name="text" label="Destinatarios" onInput={(t) => setText(t)}/>
-                <Button type="submit" onClick={handleClick}>
+                <Input name="destinataries" label="Destinatarios" onInput={(d) => setPhoneNumbers(d)}/>
+                <Button type="submit" onClick={sendHsm}>
                     Enviar
                 </Button>
             </Flex>
