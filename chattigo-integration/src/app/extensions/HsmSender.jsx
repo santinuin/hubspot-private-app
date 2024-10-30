@@ -50,9 +50,9 @@ const Extension = ({context, runServerless, sendAlert}) => {
         <>
             <Text>
                 <Text format={{fontWeight: "bold"}}>
-                    Integración con Chattigo. Envio de mensajes.
+                    Integración con API Massive de Chattigo
                 </Text>
-                Esta es una prueba de integración con el CRM de HubSpot.
+                Seleccione un template y escriba los números de teléfono de los destinatarios (separados por coma) para enviar un HSM.
             </Text>
             <Flex direction="row" align="end" gap="small">
                 <Select
