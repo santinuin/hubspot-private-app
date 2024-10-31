@@ -16,6 +16,7 @@ const Extension = ({ context, runServerless, sendAlert }) => {
     const [templates, setTemplates] = useState([{ label: "Loading...", value: "" }]);
     const [selectedTemplate, setSelectedTemplate] = useState("");
 
+    // Función para obtener las opciones de los templates
     const fetchOptions = useCallback(async () => {
         try {
             const response = await runServerless({ name: "getTemplates" });
@@ -35,6 +36,7 @@ const Extension = ({ context, runServerless, sendAlert }) => {
         fetchOptions();
     }, [fetchOptions]);
 
+    // Función para enviar el HSM
     const sendHsm = useCallback(async () => {
         try {
             const template = templates.find(t => t.value === selectedTemplate).template;
