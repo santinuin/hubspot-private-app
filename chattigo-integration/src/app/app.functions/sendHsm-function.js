@@ -21,13 +21,13 @@ async function sendHsmMessage(token, phoneNumbers, template) {
     }));
 
     const inboundData = JSON.stringify({
-        did: process.env.DID,
+        did: template.channelDid,
         type: "template",
-        channel: "WHATSAPP",
-        campaign: 2246,
+        channel: template.channelType,
+        campaign: template.campaignId,
         hsm: {
             destinations: destinations,
-            template: template,
+            template: template.name,
             languageCode: "es",
             botAttention: false
         }

@@ -37,16 +37,20 @@ const Extension = ({ context, runServerless, sendAlert }) => {
 
     const sendHsm = useCallback(async () => {
         try {
+            const template = templates.find(t => t.value === selectedTemplate).template;
+            if (!template) {
+                throw new Error("Template not found");
+            }
             const { response } = await runServerless({
                 name: "sendHsm",
-                parameters: { phoneNumbers, template: selectedTemplate }
+                parameters: { phoneNumbers, template }
             });
             sendAlert({ message: "HSM enviado con éxito", type: "success" });
         } catch (error) {
             console.error("Error sending HSM:", error);
             sendAlert({ message: "Error enviando el mensaje HSM", type: "danger" });
         }
-    }, [runServerless, phoneNumbers, selectedTemplate, sendAlert]);
+    }, [runServerless, phoneNumbers, selectedTemplate, sendAlert, templates]);
 
     return (
         <>
@@ -66,7 +70,7 @@ const Extension = ({ context, runServerless, sendAlert }) => {
                 <Input
                     name="destinataries"
                     label="Destinatarios"
-                    onInput={(e) => setPhoneNumbers(e.target.value)}
+                    onInput={(e) => setPhoneNumbers(e)}
                 />
                 <Button type="submit" onClick={sendHsm}>
                     Enviar

@@ -50,7 +50,6 @@ jq -c '.[]' "$CONFIG_FILE" | while IFS= read -r ACCOUNT; do
     # Configura los secretos
     add_secret_with_expect "USERNAME" "$USERNAME"
     add_secret_with_expect "PASSWORD" "$PASSWORD"
-    add_secret_with_expect "DID" "$DID"
 
     # Cambia al directorio chattigo-integration
     cd chattigo-integration

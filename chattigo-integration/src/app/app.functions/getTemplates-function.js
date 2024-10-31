@@ -28,7 +28,8 @@ async function fetchTemplates(token) {
         });
 
         return response.data.data.map(template => ({
-            value: template.name,
+            template: template,
+            value: template.id,
             label: template.name
         }));
     } catch (error) {
