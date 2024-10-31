@@ -39,6 +39,7 @@ jq -c '.[]' "$CONFIG_FILE" | while IFS= read -r ACCOUNT; do
     ACCOUNT_NAME=$(echo "$ACCOUNT" | jq -r '.name')
     USERNAME=$(echo "$ACCOUNT" | jq -r '.username')
     PASSWORD=$(echo "$ACCOUNT" | jq -r '.password')
+    DID=$(echo "$ACCOUNT" | jq -r '.did')
 
     # Verifica que se hayan leído correctamente los valores
     echo "Configurando para el portal: $PORTAL_ID"
@@ -49,6 +50,7 @@ jq -c '.[]' "$CONFIG_FILE" | while IFS= read -r ACCOUNT; do
     # Configura los secretos
     add_secret_with_expect "USERNAME" "$USERNAME"
     add_secret_with_expect "PASSWORD" "$PASSWORD"
+    add_secret_with_expect "DID" "$DID"
 
     # Cambia al directorio chattigo-integration
     cd chattigo-integration

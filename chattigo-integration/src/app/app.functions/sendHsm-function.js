@@ -1,26 +1,27 @@
 const axios = require('axios');
 
-exports.main = async (context = {}) => {
-    const { phoneNumbers, template } = context.parameters;
+// Función para obtener el token de autenticación
+async function getAuthToken() {
+    try {
+        const response = await axios.post('https://condor-dev.chattigo.com/api-massive/message/login', {
+            username: process.env.USERNAME,
+            password: process.env.PASSWORD
+        });
+        return response.data.access_token;
+    } catch (error) {
+        console.error('Error obteniendo el token de autenticación:', error);
+        throw new Error('Error de autenticación');
+    }
+}
 
-    console.log("Template:", template);
-
-    // Obtener el token de autenticación
-    const loginResponse = await axios.post('https://condor-dev.chattigo.com/api-massive/message/login', {
-        username: process.env.USERNAME,
-        password: process.env.PASSWORD
-    });
-
-    const token = loginResponse.data.access_token;
-
-    // Procesar los destinos
+// Función para enviar el mensaje HSM
+async function sendHsmMessage(token, phoneNumbers, template) {
     const destinations = phoneNumbers.split(',').map(number => ({
         destination: number.trim()
     }));
 
-    // Crear el objeto inboundData
     const inboundData = JSON.stringify({
-        did: "56935387065",
+        did: process.env.DID,
         type: "template",
         channel: "WHATSAPP",
         campaign: 2246,
@@ -31,9 +32,7 @@ exports.main = async (context = {}) => {
             botAttention: false
         }
     });
-    console.log('inboundData:', inboundData);
 
-    // Enviar la solicitud POST al endpoint
     try {
         const response = await axios.post('https://condor-dev.chattigo.com/api-massive/message/inbound', inboundData, {
             headers: {
@@ -42,9 +41,21 @@ exports.main = async (context = {}) => {
             }
         });
 
-        return { response: response.data };
+        return response.data;
     } catch (error) {
-        console.error('Error sending inbound message:', error);
-        return { response: 'Error sending inbound message' };
+        console.error('Error enviando el mensaje HSM:', error);
+        throw new Error('Error enviando el mensaje HSM');
+    }
+}
+
+exports.main = async (context = {}) => {
+    try {
+        const { phoneNumbers, template } = context.parameters;
+        const token = await getAuthToken();
+        const response = await sendHsmMessage(token, phoneNumbers, template);
+        return { response };
+    } catch (error) {
+        console.error('Error en la función principal:', error);
+        return { response: 'Error enviando el mensaje HSM' };
     }
 };

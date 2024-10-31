@@ -1,20 +1,23 @@
 const axios = require('axios');
 const jwt = require('jsonwebtoken');
 
-exports.main = async (context = {}) => {
+// Función para obtener el token de autenticación
+async function getAuthToken() {
     try {
-
-        console.log('USERNAME:', process.env.USERNAME);
-        console.log('PASSWORD:', process.env.PASSWORD);
-
-        // Obtener el token de autenticación
-        const loginResponse = await axios.post('https://condor-dev.chattigo.com/api-massive/message/login', {
+        const response = await axios.post('https://condor-dev.chattigo.com/api-massive/message/login', {
             username: process.env.USERNAME,
             password: process.env.PASSWORD
         });
+        return response.data.access_token;
+    } catch (error) {
+        console.error('Error obteniendo el token de autenticación:', error);
+        throw new Error('Error de autenticación');
+    }
+}
 
-        const token = loginResponse.data.access_token;
-
+// Función para obtener las plantillas
+async function fetchTemplates(token) {
+    try {
         const decoded = jwt.decode(token);
         const idClient = decoded.idClient;
 
@@ -24,14 +27,23 @@ exports.main = async (context = {}) => {
             }
         });
 
-        const templates = response.data.data.map(template => ({
+        return response.data.data.map(template => ({
             value: template.name,
             label: template.name
         }));
-
-        return {templates};
     } catch (error) {
-        console.error('Error fetching options:', error);
-        return {templates: []};
+        console.error('Error obteniendo las plantillas:', error);
+        throw new Error('Error obteniendo las plantillas');
+    }
+}
+
+exports.main = async (context = {}) => {
+    try {
+        const token = await getAuthToken();
+        const templates = await fetchTemplates(token);
+        return { templates };
+    } catch (error) {
+        console.error('Error en la función principal:', error);
+        return { templates: [] };
     }
 };

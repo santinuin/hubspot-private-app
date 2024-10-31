@@ -11,7 +11,8 @@
       "file": "sendHsm-function.js",
       "secrets": [
         "USERNAME",
-        "PASSWORD"
+        "PASSWORD",
+        "DID"
       ]
     }
   }
