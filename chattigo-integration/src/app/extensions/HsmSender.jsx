@@ -15,6 +15,8 @@ const Extension = ({ context, runServerless, sendAlert }) => {
     const [phoneNumbers, setPhoneNumbers] = useState("");
     const [templates, setTemplates] = useState([{ label: "Loading...", value: "" }]);
     const [selectedTemplate, setSelectedTemplate] = useState("");
+    const [templateVariables, setTemplateVariables] = useState([]);
+    const [variableValues, setVariableValues] = useState({});
 
     // Función para obtener las opciones de los templates
     const fetchOptions = useCallback(async () => {
@@ -23,12 +25,12 @@ const Extension = ({ context, runServerless, sendAlert }) => {
             if (response.response.templates) {
                 setTemplates(response.response.templates);
             } else {
-                console.error("Invalid response format:", response);
-                setTemplates([{ label: "Error fetching templates", value: "" }]);
+                console.error("Respuesta inválida:", response);
+                setTemplates([{ label: "Error al obtener los templates", value: "" }]);
             }
         } catch (error) {
-            console.error("Error fetching templates:", error);
-            setTemplates([{ label: "Error fetching templates", value: "" }]);
+            console.error("Error al obtener los templates:", error);
+            setTemplates([{ label: "Error al obtener los templates", value: "" }]);
         }
     }, [runServerless]);
 
@@ -36,23 +38,60 @@ const Extension = ({ context, runServerless, sendAlert }) => {
         fetchOptions();
     }, [fetchOptions]);
 
-    // Función para enviar el HSM
+    // Función para detectar variables en el template seleccionado
+    const detectTemplateVariables = (template) => {
+        const variablePattern = /\{\{(\d+)\}\}/g;
+        const variables = [];
+        let match;
+        while ((match = variablePattern.exec(template)) !== null) {
+            variables.push(match[1]);
+        }
+        return variables;
+    };
+
+    // Manejar el cambio de template seleccionado
+    const handleTemplateChange = (value) => {
+        const selected = templates.find(t => t.value === value);
+        setSelectedTemplate(selected);
+        console.log(selected);
+        if (selected) {
+            const variables = detectTemplateVariables(selected.template.template);
+            setTemplateVariables(variables);
+            setVariableValues(variables.reduce((acc, variable) => {
+                acc[variable] = "";
+                return acc;
+            }, {}));
+        } else {
+            setTemplateVariables([]);
+            setVariableValues({});
+        }
+    };
+
+    // Manejar el cambio de valor de las variables
+    const handleVariableChange = (variable, value) => {
+        setVariableValues(prevValues => ({
+            ...prevValues,
+            [variable]: value
+        }));
+    };
+
+// Función para enviar el HSM
     const sendHsm = useCallback(async () => {
         try {
-            const template = templates.find(t => t.value === selectedTemplate).template;
+            const template = templates.find(t => t.value === selectedTemplate.value).template;
             if (!template) {
-                throw new Error("Template not found");
+                throw new Error("Template no encontrado");
             }
             const { response } = await runServerless({
                 name: "sendHsm",
-                parameters: { phoneNumbers, template }
+                parameters: { phoneNumbers, template, variableValues }
             });
             sendAlert({ message: "HSM enviado con éxito", type: "success" });
         } catch (error) {
-            console.error("Error sending HSM:", error);
+            console.error("Error enviando el mensaje HSM:", error);
             sendAlert({ message: "Error enviando el mensaje HSM", type: "danger" });
         }
-    }, [runServerless, phoneNumbers, selectedTemplate, sendAlert, templates]);
+    }, [runServerless, phoneNumbers, selectedTemplate, sendAlert, templates, variableValues]);
 
     return (
         <>
@@ -67,13 +106,21 @@ const Extension = ({ context, runServerless, sendAlert }) => {
                     name="templates"
                     label="Templates"
                     options={templates}
-                    onChange={setSelectedTemplate}
+                    onChange={(value) => handleTemplateChange(value)}
                 />
                 <Input
                     name="destinataries"
                     label="Destinatarios"
                     onInput={(e) => setPhoneNumbers(e)}
                 />
+                {templateVariables.map(variable => (
+                    <Input
+                        key={variable}
+                        name={`variable-${variable}`}
+                        label={`Variable ${variable}`}
+                        onInput={(e) => handleVariableChange(variable, e)}
+                    />
+                ))}
                 <Button type="submit" onClick={sendHsm}>
                     Enviar
                 </Button>

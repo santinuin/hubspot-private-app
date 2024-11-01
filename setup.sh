@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Leer variables del archivo JSON
-CONFIG_FILE="hsconfig.json"
+# Leer variables del archivo YAML
+CONFIG_FILE="hsconfig.yml"
 
 # Función de expect para automatizar la autenticación
 auth_with_expect() {
@@ -30,16 +30,15 @@ add_secret_with_expect() {
 EOF
 }
 
-# Itera sobre cada objeto en el archivo JSON
-jq -c '.[]' "$CONFIG_FILE" | while IFS= read -r ACCOUNT; do
+# Itera sobre cada objeto en el archivo YAML
+yq -c '.accounts[]' "$CONFIG_FILE" | while IFS= read -r ACCOUNT; do
 
-    # Extrae los valores individuales usando jq
-    PORTAL_ID=$(echo "$ACCOUNT" | jq -r '.portalId')
-    PERSONAL_ACCESS_KEY=$(echo "$ACCOUNT" | jq -r '.personalAccessKey')
-    ACCOUNT_NAME=$(echo "$ACCOUNT" | jq -r '.name')
-    USERNAME=$(echo "$ACCOUNT" | jq -r '.username')
-    PASSWORD=$(echo "$ACCOUNT" | jq -r '.password')
-    DID=$(echo "$ACCOUNT" | jq -r '.did')
+    # Extrae los valores individuales usando yq
+    PORTAL_ID=$(echo "$ACCOUNT" | yq -r '.portalId')
+    PERSONAL_ACCESS_KEY=$(echo "$ACCOUNT" | yq -r '.personalAccessKey')
+    ACCOUNT_NAME=$(echo "$ACCOUNT" | yq -r '.name')
+    USERNAME=$(echo "$ACCOUNT" | yq -r '.username')
+    PASSWORD=$(echo "$ACCOUNT" | yq -r '.password')
 
     # Verifica que se hayan leído correctamente los valores
     echo "Configurando para el portal: $PORTAL_ID"
@@ -60,4 +59,3 @@ jq -c '.[]' "$CONFIG_FILE" | while IFS= read -r ACCOUNT; do
     # Regresa al directorio anterior
     cd -
 done
-
