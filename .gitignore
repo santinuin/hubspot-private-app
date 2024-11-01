@@ -106,3 +106,5 @@ hubspot.config.yml
 
 hsconfig.json
 /hsconfig.yml
+
+*/package-lock.json
